@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Form, useForm } from "react-hook-form";
 import { styled } from "styled-components";
 
@@ -29,7 +29,7 @@ interface DropDownProps {
   onChange: (option: string) => void;
 }
 
-export default function DropDown(props: DropDownProps) {
+const DropDown = forwardRef((props: DropDownProps, ref) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -60,4 +60,6 @@ export default function DropDown(props: DropDownProps) {
       )}
     </DropdownContainer>
   );
-}
+});
+
+export default DropDown;
