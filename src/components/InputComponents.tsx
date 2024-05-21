@@ -2,11 +2,33 @@ import { useForm, Controller } from "react-hook-form";
 import { styled } from "styled-components";
 import { useMask } from "@react-input/mask";
 import DropDown from "./DropDown";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+const Submit = styled.button<{ $isActive?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 40px;
+  border-radius: 12px;
+  padding: 12px, 24px, 24px, 24px;
+  gap: 21px;
+  background: ${(props) => (props.$isActive ? "#9394AA" : "green")};
+  box-shadow: none;
+  border: none;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+`;
+const FormRow = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  margin: auto;
   padding: 20px;
   width: 540px;
   height: 850px;
@@ -15,30 +37,8 @@ const Form = styled.form`
   gap: 21px;
   background: #eff2f5;
 `;
-const Div = styled.div`
-  width: 490px;
-  height: 66px;
-  top: 20px;
-  left: 20px;
-  border-radius: 2px;
-  gap: 4px;
-`;
-const InputBox = styled.div`
-  width: 490px;
-  height: 44px;
-  padding: 0px 12px 0px 12px;
-  gap: 10px;
-  border-radius: 6px;
-  border-color: white;
-  outline: none;
-  border: none;
-  &:focus {
-    border: 1px solid green;
-  }
-  box-shadow: none;
-`;
 const Input = styled.input`
-  width: 490px;
+  margin-top: 10px;
   height: 44px;
   padding: 0px 12px 0px 12px;
   gap: 10px;
@@ -52,7 +52,6 @@ const Input = styled.input`
   box-shadow: none;
 `;
 const Label = styled.label`
-  width: 490px;
   height: 18px;
   font-size: 14px;
   color: #9394aa;
@@ -64,8 +63,20 @@ const Checkbox = styled.input`
   border-radius: 4px;
   border: 1.5 solid #9394aa;
 `;
+const Header = styled.h1`
+  font-size: 20px;
+  font-weight: bold;
+`;
+const ErrorMessage = styled.span`
+  color: red;
+  margin-top: 5px;
+`;
+const RequiredMark = styled.span`
+  color: red;
+`;
 
 export default function InputComponents() {
+  const [isClick, setIsClick] = useState(false);
   const {
     control,
     register,
@@ -74,34 +85,42 @@ export default function InputComponents() {
     watch,
     handleSubmit,
   } = useForm();
-  const onSubmit = (data: any) => console.log(data);
+
+  const onSubmit = (data: any) => alert("success");
+
   const inputRef = useMask({
     mask: "___ ___.__",
     replacement: { _: /\d/ },
   });
 
   const [watchAmount, watchAcreditation] = watch(["amount", "acreditation"]);
+  register("amount", { required: true });
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <Label>ФИО</Label>
+      <Header>Заполните форму</Header>
+      <FormRow>
+        <Label>
+          ФИО <RequiredMark>*</RequiredMark>
+        </Label>
         <Input
           placeholder="Заполнить"
           {...register("fio", { required: true, maxLength: 30, minLength: 10 })}
         />
-        {errors.fio && <div>Это поле обязательно</div>}
-      </div>
+        {errors.fio && <ErrorMessage>Некорректное имя</ErrorMessage>}
+      </FormRow>
 
-      <div>
-        <Label>Рейтинг</Label>
+      <FormRow>
+        <Label>
+          Рейтинг <RequiredMark>*</RequiredMark>
+        </Label>
         <Input
           type="number"
           placeholder="Введите значение от 1 до 100"
           {...register("rating", { required: true, min: 1, max: 100 })}
         />
-        {errors.rating && <div>Это поле обязательно</div>}
-      </div>
+        {errors.rating && <ErrorMessage>Некорректное значение</ErrorMessage>}
+      </FormRow>
       <div>
         <Checkbox
           id="acreditation"
@@ -110,34 +129,47 @@ export default function InputComponents() {
         />
         <label htmlFor="acreditation">Имеется аккредитация</label>
       </div>
-      <div>
-        <Label>Желаемая сумма</Label>
+      <FormRow>
+        <Label>
+          Желаемая сумма <RequiredMark>*</RequiredMark>
+        </Label>
         <Input
           onChange={(event) => setValue("amount", event.target.value)}
           placeholder="0"
           ref={inputRef}
         ></Input>
-        {errors.amount && <div>Это поле обязательно</div>}
-      </div>
-
-      <Controller
-        name="select"
-        defaultValue={"Категория 1"}
-        control={control}
-        render={({ field }) => {
-          return (
-            <DropDown
-              options={[
-                "Категория 1",
-                "Категория 2",
-                "Категория 3",
-                "Категория 4",
-              ]}
-              {...field}
-            />
-          );
-        }}
-      />
+        {errors.amount && <ErrorMessage>Это поле обязательно</ErrorMessage>}
+      </FormRow>
+      <FormRow>
+        <Label>
+          Категория <RequiredMark>*</RequiredMark>
+        </Label>
+        <Controller
+          name="select"
+          defaultValue={"Категория 1"}
+          control={control}
+          render={({ field }) => {
+            return (
+              <DropDown
+                options={[
+                  "Категория 1",
+                  "Категория 2",
+                  "Категория 3",
+                  "Категория 4",
+                ]}
+                {...field}
+              />
+            );
+          }}
+        />
+      </FormRow>
+      <FormRow>
+        <Label>Комментарий</Label>
+        <Input
+          placeholder="Комментарий"
+          {...register("comment", { maxLength: 200 })}
+        />
+      </FormRow>
 
       <div>
         <b>Итоговая сумма: </b>
@@ -149,7 +181,13 @@ export default function InputComponents() {
           </b>
         )}
       </div>
-      <button type="submit">Submit</button>
+      <Submit
+        $isActive={!isClick}
+        onClick={() => setIsClick(!isClick)}
+        type="submit"
+      >
+        Отправить
+      </Submit>
     </Form>
   );
 }

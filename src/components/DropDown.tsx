@@ -3,7 +3,7 @@ import { Form, useForm } from "react-hook-form";
 import { styled } from "styled-components";
 
 const InputBox = styled.div<{ $isActive?: boolean }>`
-  width: 490px;
+  margin-top: 10px;
   height: 45px;
   background: white;
   padding: 0px 12px 0px 12px;
@@ -11,6 +11,10 @@ const InputBox = styled.div<{ $isActive?: boolean }>`
   border-radius: 6px;
   box-shadow: none;
   line-height: 45px;
+  border-bottom: 1px solid grey;
+  &:hover {
+    background: #9394aa;
+  }
 `;
 const DropdownContainer = styled.div`
   position: relative;
@@ -18,9 +22,12 @@ const DropdownContainer = styled.div`
 const DropdownList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
+  width: 100%;
   position: absolute;
-  top: 55px;
+  top: 65px;
+  background: #eff2f5;
+  border-radius: 6px;
 `;
 
 interface DropDownProps {
