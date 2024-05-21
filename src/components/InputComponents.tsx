@@ -2,6 +2,7 @@ import { useForm, Controller } from "react-hook-form";
 import { styled } from "styled-components";
 import { useMask } from "@react-input/mask";
 import DropDown from "./DropDown";
+import { useEffect } from "react";
 
 const Form = styled.form`
   display: flex;
@@ -69,6 +70,8 @@ export default function InputComponents() {
     control,
     register,
     formState: { errors },
+    setValue,
+    watch,
     handleSubmit,
   } = useForm();
   const onSubmit = (data: any) => console.log(data);
@@ -76,6 +79,8 @@ export default function InputComponents() {
     mask: "___ ___.__",
     replacement: { _: /\d/ },
   });
+
+  const [watchAmount, watchAcreditation] = watch(["amount", "acreditation"]);
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -108,9 +113,9 @@ export default function InputComponents() {
       <div>
         <Label>Желаемая сумма</Label>
         <Input
-          {...register("amount", { required: true })}
-          ref={inputRef}
+          onChange={(event) => setValue("amount", event.target.value)}
           placeholder="0"
+          ref={inputRef}
         ></Input>
         {errors.amount && <div>Это поле обязательно</div>}
       </div>
@@ -134,6 +139,16 @@ export default function InputComponents() {
         }}
       />
 
+      <div>
+        <b>Итоговая сумма: </b>
+        {watchAmount && (
+          <b>
+            {watchAcreditation
+              ? parseFloat(watchAmount.split(" ").join("")) * 1.2
+              : parseFloat(watchAmount.split(" ").join(""))}
+          </b>
+        )}
+      </div>
       <button type="submit">Submit</button>
     </Form>
   );
